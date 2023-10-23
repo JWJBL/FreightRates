@@ -1012,7 +1012,7 @@ countries = ('Shanghai,CN',
 'Samarkand,UZ',
 'Macapa,BR')
 
-today = datetime.today()- timedelta(days=1)
+today = datetime.today()
 today = today.strftime('%Y-%m-%d')
 
 def get_auth_token():
@@ -1054,7 +1054,7 @@ def get_coordinates(location):
     lng =  response_json['results'][0]['geometry']['location']['lng']
     return (lat,lng)
 
-def get_rates(origin_lat,origin_lng,destination_lat,destination_lng,size,type,weight,volume,auth_token):
+def get_rates(origin_lat,origin_lng,destination_lat,destination_lng,size,type,weight,volume,auth_token, today):
     try:
         url = "https://www.searates.com/graphql_rates"
         headers = {
@@ -1090,20 +1090,29 @@ def get_rates(origin_lat,origin_lng,destination_lat,destination_lng,size,type,we
                 truck_to = response_json['data']['shipment'][n]['freight'][0]['truckTo']['price']
                 truck_to_tt = response_json['data']['shipment'][n]['freight'][0]['truckTo']['transitTime']
 
-                total_price = port_fees_from+port_fees_to+freight+truck_from+truck_to
-                transit_time = response_json['data']['shipment'][n]['freight'][0]['transitTime'] + truck_from_tt+truck_to_tt
-                for i,c in enumerate(transit_time):
-                    if not c.isdigit():
-                        break
-                transit_time = int(transit_time[:i])
-                for i,c in enumerate(truck_from_tt):
-                    if not c.isdigit():
-                        break
-                truck_from_tt = int(truck_from_tt[:i])
-                for i,c in enumerate(truck_to_tt):
-                    if not c.isdigit():
-                        break
-                truck_to_tt = int(truck_to_tt[:i])
+                total_price = (0 if port_fees_from==None else port_fees_from)+ (0 if port_fees_to==None else port_fees_to)+(0 if freight==None else freight) + (0 if truck_from==None else truck_from) + (0 if truck_to==None else truck_to)
+                transit_time = response_json['data']['shipment'][n]['freight'][0]['transitTime']
+                if transit_time!=None:
+                    for i,c in enumerate(transit_time):
+                        if not c.isdigit():
+                            break
+                    transit_time = int(transit_time[:i])
+                else:
+                    transit_time=0
+                if truck_from_tt!= None:
+                    for i,c in enumerate(truck_from_tt):
+                        if not c.isdigit():
+                            break
+                    truck_from_tt = int(truck_from_tt[:i])
+                else:
+                    truck_from_tt=0
+                if truck_to_tt!=None:
+                    for i,c in enumerate(truck_to_tt):
+                        if not c.isdigit():
+                            break
+                    truck_to_tt = int(truck_to_tt[:i])
+                else:
+                    truck_to_tt=0
                 transit_time = transit_time + truck_from_tt+truck_to_tt
                 if n==0 or total_price <= min_price:
                     min_price = total_price
@@ -1140,20 +1149,29 @@ def get_rates(origin_lat,origin_lng,destination_lat,destination_lng,size,type,we
                 truck_to = response_json['data']['shipment'][n]['freight'][0]['truckTo']['price']
                 truck_to_tt = response_json['data']['shipment'][n]['freight'][0]['truckTo']['transitTime']
 
-                total_price = port_fees_from+port_fees_to+freight+truck_from+truck_to
-                transit_time = response_json['data']['shipment'][n]['freight'][0]['transitTime'] + truck_from_tt+truck_to_tt
-                for i,c in enumerate(transit_time):
-                    if not c.isdigit():
-                        break
-                transit_time = int(transit_time[:i])
-                for i,c in enumerate(truck_from_tt):
-                    if not c.isdigit():
-                        break
-                truck_from_tt = int(truck_from_tt[:i])
-                for i,c in enumerate(truck_to_tt):
-                    if not c.isdigit():
-                        break
-                truck_to_tt = int(truck_to_tt[:i])
+                total_price = (0 if port_fees_from==None else port_fees_from)+ (0 if port_fees_to==None else port_fees_to)+(0 if freight==None else freight) + (0 if truck_from==None else truck_from) + (0 if truck_to==None else truck_to)
+                transit_time = response_json['data']['shipment'][n]['freight'][0]['transitTime']
+                if transit_time!=None:
+                    for i,c in enumerate(transit_time):
+                        if not c.isdigit():
+                            break
+                    transit_time = int(transit_time[:i])
+                else:
+                    transit_time=0
+                if truck_from_tt!= None:
+                    for i,c in enumerate(truck_from_tt):
+                        if not c.isdigit():
+                            break
+                    truck_from_tt = int(truck_from_tt[:i])
+                else:
+                    truck_from_tt=0
+                if truck_to_tt!=None:
+                    for i,c in enumerate(truck_to_tt):
+                        if not c.isdigit():
+                            break
+                    truck_to_tt = int(truck_to_tt[:i])
+                else:
+                    truck_to_tt=0
                 transit_time = transit_time + truck_from_tt+truck_to_tt
                 if n==0 or total_price <= min_price:
                     min_price = total_price
@@ -1285,14 +1303,13 @@ with st.spinner('Loading SeaRates Rates...'):
 
         df = pd.DataFrame()
         #20' container
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"20","FCL","","",auth_token)
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"20","FCL","","",auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
             df=pd.DataFrame({"Type":['20ft FCL'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
-
         #40' container
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"40","FCL","","",auth_token)
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"40","FCL","","",auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
@@ -1301,9 +1318,8 @@ with st.spinner('Loading SeaRates Rates...'):
                 df = pd.concat([df,df2])
             else:
                 df = df2
-
         #LCL
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","LCL","1000","5",auth_token)
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","LCL","1000","5",auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
@@ -1312,9 +1328,8 @@ with st.spinner('Loading SeaRates Rates...'):
                 df = pd.concat([df,df3])
             else:
                 df = df3
-
         #Air
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","Air","1000","5",auth_token)
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","Air","1000","5",auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
@@ -1324,7 +1339,7 @@ with st.spinner('Loading SeaRates Rates...'):
             else:
                 df = df4
         #FTL
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","FTL","","86",auth_token)
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","FTL","","86",auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
@@ -1334,7 +1349,7 @@ with st.spinner('Loading SeaRates Rates...'):
             else:
                 df = df4
         #LTL
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","LTL","1000","5",auth_token)
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","LTL","1000","5",auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
@@ -1343,7 +1358,6 @@ with st.spinner('Loading SeaRates Rates...'):
                 df = pd.concat([df,df5])
             else:
                 df = df5
-
         fig = plt.figure(figsize=(24,4))
         plt.rcParams['font.family'] = 'Segoe UI'
         gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
