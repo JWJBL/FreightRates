@@ -1295,20 +1295,52 @@ def get_rates(origin_lat,origin_lng,destination_lat,destination_lng,size,type,we
 
 origin = st.selectbox('Origin',countries, index = 788)
 destination = st.selectbox( 'Destination',countries, index = 512)
-with st.spinner('Loading SeaRates Rates...'):
-    try:
+
+with st.expander("SeaRates Parameters"):
+    c1, c2, c3, c4 = st.columns(4)
+    with c1:
+        air_volume = str(st.number_input('Air Cu M', 0, 1000, 5))
+        air_weight = str(st.number_input('Air Kg', 0, 10000, 1000))
+    with c2:
+        LCL_volume = str(st.number_input('LCL Cu M', 0, 1000, 5))
+        LCL_weight = str(st.number_input('LCL Kg', 0, 10000, 1000))
+    with c3:
+        LTL_volume = str(st.number_input('LTL Cu M', 0, 1000, 5))
+        LTL_weight = str(st.number_input('LTL Kg', 0, 10000, 1000))
+    with c4:
+        FTL_volume = str(st.number_input('FTL Cu M', 0, 1000, 86))
+
+with st.expander("Freightos Parameters"):
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        fcl_40_weight = st.number_input('40\' FCL Kg', 0, 10000, 4000)
+        fcl_20_weight = st.number_input('20\' FCL Kg', 0, 10000, 2000)
+    with c2:
+        pallet_count = st.number_input('Pallet Count', 0, 1000, 5)
+        pallet_volume = st.number_input('Cu M / Pallet', 0, 1000, 1)
+        pallet_weight = st.number_input('Kg / Pallet', 0, 10000, 200)
+    with c3:
+        FCL_volume = st.number_input('FCL Cu M', 0, 1000, 86)
+
+
+try:
+    with st.spinner('Loading SeaRates Rates...'):
         auth_token = get_auth_token()
         origin_lat,origin_lng = get_coordinates(origin)
         destination_lat,destination_lng  = get_coordinates(destination)
 
         df = pd.DataFrame()
-        #20' container
+    #20' container
+    with st.spinner('Loading SeaRates Rates: FCL 20\' Rates...'):
+        print("Getting SeaRates FCL 20' Rates")
         min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"20","FCL","","",auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
             df=pd.DataFrame({"Type":['20ft FCL'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
-        #40' container
+    #40' container
+    with st.spinner('Loading SeaRates Rates: FCL 40\' Rates...'):
+        print("Getting SeaRates FCL 40' Rates")
         min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"40","FCL","","",auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
@@ -1318,46 +1350,55 @@ with st.spinner('Loading SeaRates Rates...'):
                 df = pd.concat([df,df2])
             else:
                 df = df2
-        #LCL
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","LCL","1000","5",auth_token,today)
+    #LCL
+    with st.spinner('Loading SeaRates Rates: LCL Rates...'):
+        print("Getting SeaRates LCL Rates")
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","LCL",LCL_weight,LCL_volume,auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
-            df3=pd.DataFrame({"Type":['LCL (1,000 Kg)'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
+            df3=pd.DataFrame({"Type":['LCL'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
             if len(df)>0:
                 df = pd.concat([df,df3])
             else:
                 df = df3
-        #Air
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","Air","1000","5",auth_token,today)
+    #Air
+    with st.spinner('Loading SeaRates Rates: Air Rates...'):
+        print("Getting SeaRates Air Rates")
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","Air",air_weight,air_volume,auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
-            df4=pd.DataFrame({"Type":['Air (1,000 Kg)'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
+            df4=pd.DataFrame({"Type":['Air'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
             if len(df)>0:
                 df = pd.concat([df,df4])
             else:
                 df = df4
-        #FTL
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","FTL","","86",auth_token,today)
+    #FTL
+    with st.spinner('Loading SeaRates Rates: FTL Rates...'):
+        print("Getting SeaRates FTL Rates")
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","FTL","",FTL_volume,auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
-            df4=pd.DataFrame({"Type":['FTL (86 CBM)'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
+            df4=pd.DataFrame({"Type":['FTL'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
             if len(df)>0:
                 df = pd.concat([df,df4])
             else:
                 df = df4
-        #LTL
-        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","LTL","1000","5",auth_token,today)
+    #LTL
+    with st.spinner('Loading SeaRates Rates: LTL Rates...'):
+        print("Getting SeaRates LTL Rates")
+        min_price,max_price,min_tt,max_tt = get_rates(origin_lat,origin_lng,destination_lat,destination_lng,"","LTL",LTL_weight,LTL_volume,auth_token,today)
         if min_price != None:
             min_price = "${:,.0f}".format(min_price)
             max_price = "${:,.0f}".format(max_price)
-            df5=pd.DataFrame({"Type":['LTL (1,000 Kg)'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
+            df5=pd.DataFrame({"Type":['LTL'], "Min Price":[min_price],"Max Price":[max_price],"Min Transit Time":[min_tt],"Max Transit Time":[max_tt]})
             if len(df)>0:
                 df = pd.concat([df,df5])
             else:
                 df = df5
+    with st.spinner('Loading SeaRates Rates...'):
         fig = plt.figure(figsize=(24,4))
         gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
         ax0 = fig.add_subplot(gs[0, :])
@@ -1374,7 +1415,8 @@ with st.spinner('Loading SeaRates Rates...'):
         table0.scale(1,3.5)
 
         st.pyplot(plt.gcf())
-    except:
+except:
+    with st.spinner('Loading SeaRates Rates...'):
         fig = plt.figure(figsize=(24,5))
         gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
         ax0 = fig.add_subplot(gs[0, :])
@@ -1496,30 +1538,37 @@ def get_results(origin,destination,loadtype,weight,quantity,type,volume):
     result['Max Price']=result['Max Price'].apply(lambda x: "${:,.0f}".format(x) if x!=None else None)
     return result
 
-with st.spinner('Loading Freightos Rates...'):
+with st.spinner('Loading Freightos Rates: FCL 40\' Rates...'):
+    print("Getting Freightos FCL 40' Rates")
     loadtype = 'container40'
-    weight = 4000  # weight in kilograms
+    weight = fcl_40_weight  # weight in kilograms
     quantity = 1
     results=get_results(origin,destination,loadtype,weight,quantity,'FCL','')
     nrow = len(results)
     results.insert(loc=0, column='Type', value =list(repeat('40ft', nrow)))
 
+
+with st.spinner('Loading Freightos Rates: FCL 20\' Rates...'):
+    print("Getting Freightos FCL 20' Rates")
     loadtype = 'container20'
-    weight = 2000  # weight in kilograms
+    weight = fcl_20_weight  # weight in kilograms
     quantity = 1
     results2=get_results(origin,destination,loadtype,weight,quantity,'FCL','')
     nrow = len(results2)
     results2.insert(loc=0, column='Type', value =list(repeat('20ft', nrow)))
     results = pd.concat([results,results2])
 
+with st.spinner('Loading Freightos Rates: LCL Rates...'):
+    print("Getting Freightos LCL Rates")
     loadtype = 'pallets'
-    weight = 200  # weight in kilograms
-    quantity = 5
+    weight = pallet_weight  # weight in kilograms
+    quantity = pallet_count
     results3=get_results(origin,destination,loadtype,weight,quantity,'LCL','1')
     nrow = len(results3)
-    results3.insert(loc=0, column='Type', value =list(repeat('200kg Pallets (5)', nrow)))
+    results3.insert(loc=0, column='Type', value =list(repeat('Pallets', nrow)))
     results = pd.concat([results,results3])
 
+with st.spinner('Loading Freightos Rates...'):
     if results['Min Price'].isnull().all():
         fig = plt.figure(figsize=(24,4))
         gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
