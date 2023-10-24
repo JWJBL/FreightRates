@@ -1399,39 +1399,44 @@ try:
             else:
                 df = df5
     with st.spinner('Loading SeaRates Rates...'):
-        fig = plt.figure(figsize=(24,4))
-        gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
-        ax0 = fig.add_subplot(gs[0, :])
-        ax0.axis('off')
-        ax0.set_title("SeaRates", fontsize=24)
-        table0= ax0.table( 
-            cellText = df.values,
-            colLabels= df.columns,
-            rowLoc = 'left',
-            cellLoc ='center',  
-            loc ='upper left')
-        table0.auto_set_font_size(False)     
-        table0.set_fontsize(24)
-        table0.scale(1,3.5)
+        st.subheader('SeaRates')
+        df.set_index(df.columns[0], inplace=True)
+        st.dataframe(df)
+        # fig = plt.figure(figsize=(24,4))
+        # gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
+        # ax0 = fig.add_subplot(gs[0, :])
+        # ax0.axis('off')
+        # ax0.set_title("SeaRates", fontsize=24)
+        # table0= ax0.table( 
+        #     cellText = df.values,
+        #     colLabels= df.columns,
+        #     rowLoc = 'left',
+        #     cellLoc ='center',  
+        #     loc ='upper left')
+        # table0.auto_set_font_size(False)     
+        # table0.set_fontsize(24)
+        # table0.scale(1,3.5)
 
-        st.pyplot(plt.gcf())
+        # st.pyplot(plt.gcf())
 except:
     with st.spinner('Loading SeaRates Rates...'):
-        fig = plt.figure(figsize=(24,5))
-        gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
-        ax0 = fig.add_subplot(gs[0, :])
-        ax0.axis('off')
-        ax0.set_title("SeaRates", fontsize=24)
-        table0= ax0.table( 
-            cellText = pd.DataFrame({"result":["No Rates Found"]}).values,
-            rowLoc = 'left',
-            cellLoc ='center',  
-            loc ='upper left')
-        table0.auto_set_font_size(False)     
-        table0.set_fontsize(24)
-        table0.scale(1,3.5)
+        st.subheader('SeaRates')
+        st.dataframe(pd.DataFrame({"result":["No Rates Found"]}).values,)
+        # fig = plt.figure(figsize=(24,5))
+        # gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
+        # ax0 = fig.add_subplot(gs[0, :])
+        # ax0.axis('off')
+        # ax0.set_title("SeaRates", fontsize=24)
+        # table0= ax0.table( 
+        #     cellText = pd.DataFrame({"result":["No Rates Found"]}).values,
+        #     rowLoc = 'left',
+        #     cellLoc ='center',  
+        #     loc ='upper left')
+        # table0.auto_set_font_size(False)     
+        # table0.set_fontsize(24)
+        # table0.scale(1,3.5)
 
-        st.pyplot(plt.gcf())
+        # st.pyplot(plt.gcf())
 
 API_BASE_URL = 'https://ship.freightos.com/api/shippingCalculator'
 
@@ -1569,36 +1574,40 @@ with st.spinner('Loading Freightos Rates: LCL Rates...'):
     results = pd.concat([results,results3])
 
 with st.spinner('Loading Freightos Rates...'):
+    st.subheader('Freightos')
     if results['Min Price'].isnull().all():
-        fig = plt.figure(figsize=(24,4))
-        gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
-        ax0 = fig.add_subplot(gs[0, :])
-        ax0.axis('off')
-        ax0.set_title("Freightos", fontsize=24)
-        table0= ax0.table( 
-            cellText = pd.DataFrame({"result":["No Rates Found"]}).values,
-            rowLoc = 'left',
-            cellLoc ='center',  
-            loc ='upper left')
-        table0.auto_set_font_size(False)     
-        table0.set_fontsize(24)
-        table0.scale(1,3.5)
+        st.dataframe(pd.DataFrame({"result":["No Rates Found"]}).values)
+        # fig = plt.figure(figsize=(24,4))
+        # gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
+        # ax0 = fig.add_subplot(gs[0, :])
+        # ax0.axis('off')
+        # ax0.set_title("Freightos", fontsize=24)
+        # table0= ax0.table( 
+        #     cellText = pd.DataFrame({"result":["No Rates Found"]}).values,
+        #     rowLoc = 'left',
+        #     cellLoc ='center',  
+        #     loc ='upper left')
+        # table0.auto_set_font_size(False)     
+        # table0.set_fontsize(24)
+        # table0.scale(1,3.5)
 
-        st.pyplot(plt.gcf())
+        # st.pyplot(plt.gcf())
 
     else:
         results=results[results['Min Price'].isnull()==False]
-        fig = plt.figure(figsize=(24,4))
-        ax0 = fig.add_subplot()
-        ax0.axis('off')
-        ax0.set_title("Freightos", fontsize=24)
-        table1= ax0.table( 
-            cellText = results.values,
-            colLabels= results.columns,
-            rowLoc = 'left',
-            cellLoc ='center',  
-            loc ='upper left')
-        table1.auto_set_font_size(False)     
-        table1.set_fontsize(24)
-        table1.scale(1,3.5)
-        st.pyplot(plt.gcf())
+        results.set_index(results.columns[0], inplace=True)
+        st.dataframe(results)
+        # fig = plt.figure(figsize=(24,4))
+        # ax0 = fig.add_subplot()
+        # ax0.axis('off')
+        # ax0.set_title("Freightos", fontsize=24)
+        # table1= ax0.table( 
+        #     cellText = results.values,
+        #     colLabels= results.columns,
+        #     rowLoc = 'left',
+        #     cellLoc ='center',  
+        #     loc ='upper left')
+        # table1.auto_set_font_size(False)     
+        # table1.set_fontsize(24)
+        # table1.scale(1,3.5)
+        # st.pyplot(plt.gcf())

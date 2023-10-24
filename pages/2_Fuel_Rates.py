@@ -8,7 +8,7 @@ from matplotlib.gridspec import GridSpec
 
 st.title('Fuel Rates')
 
-with st.spinner('Loading Freightos Rates...'):
+with st.spinner('Loading Fuel Rates...'):
     url = "https://www.eia.gov/petroleum/gasdiesel/"
     payload = {}
     headers = {}
@@ -37,35 +37,42 @@ with st.spinner('Loading Freightos Rates...'):
     diesel_prices.columns.values[4]="1 wk change"
     diesel_prices.columns.values[5]="1 yr change"
 
-    fig = plt.figure(figsize=(16,16))
-    gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
-    ax0 = fig.add_subplot(gs[0, :])
-    ax0.axis('off')
-    ax0.set_title("Regular Gas (eia.gov)", fontsize=24)
-    table0= ax0.table( 
-        cellText = regular_gas_prices.values,
-        colLabels= regular_gas_prices.columns,
-        rowLoc = 'left',
-        cellLoc ='center',  
-        loc ='upper left')
-    table0.auto_set_font_size(False)     
-    table0.auto_set_column_width(col=list(range(len(regular_gas_prices.columns))))
-    table0.set_fontsize(24)
-    table0.scale(1,3)
+    
+    regular_gas_prices.set_index(regular_gas_prices.columns[0], inplace=True)
+    st.dataframe(regular_gas_prices)
+    
+    # fig = plt.figure(figsize=(16,16))
+    # gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
+    # ax0 = fig.add_subplot(gs[0, :])
+    # ax0.axis('off')
+    # ax0.set_title("Regular Gas (eia.gov)", fontsize=24)
+    # table0= ax0.table( 
+    #     cellText = regular_gas_prices.values,
+    #     colLabels= regular_gas_prices.columns,
+    #     rowLoc = 'left',
+    #     cellLoc ='center',  
+    #     loc ='upper left')
+    # table0.auto_set_font_size(False)     
+    # table0.auto_set_column_width(col=list(range(len(regular_gas_prices.columns))))
+    # table0.set_fontsize(24)
+    # table0.scale(1,3)
 
-    ax1 = fig.add_subplot(gs[1, :])
-    ax1.axis('off')
-    ax1.set_title("Diesel (eia.gov)", fontsize=24)
-    table1= ax1.table( 
-        cellText = diesel_prices.values,
-        colLabels= diesel_prices.columns,
-        rowLoc = 'left',
-        cellLoc ='center',  
-        loc ='upper left')
-    table1.auto_set_font_size(False)     
-    table1.auto_set_column_width(col=list(range(len(diesel_prices.columns))))
-    table1.set_fontsize(24)
-    table1.scale(1,3)
+    diesel_prices.set_index(diesel_prices.columns[0], inplace=True)
+    st.dataframe(diesel_prices)
+
+    # ax1 = fig.add_subplot(gs[1, :])
+    # ax1.axis('off')
+    # ax1.set_title("Diesel (eia.gov)", fontsize=24)
+    # table1= ax1.table( 
+    #     cellText = diesel_prices.values,
+    #     colLabels= diesel_prices.columns,
+    #     rowLoc = 'left',
+    #     cellLoc ='center',  
+    #     loc ='upper left')
+    # table1.auto_set_font_size(False)     
+    # table1.auto_set_column_width(col=list(range(len(diesel_prices.columns))))
+    # table1.set_fontsize(24)
+    # table1.scale(1,3)
 
 
-    st.pyplot(plt.gcf())
+    # st.pyplot(plt.gcf())
