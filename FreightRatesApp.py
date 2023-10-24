@@ -1293,8 +1293,8 @@ def get_rates(origin_lat,origin_lng,destination_lat,destination_lng,size,type,we
         min_tt = None
     return (min_price,max_price,min_tt,max_tt)
 
-origin = st.selectbox('Origin',countries, index = 789)
-destination = st.selectbox( 'Destination',countries, index = 513)
+origin = st.selectbox('Origin',countries, index = 788)
+destination = st.selectbox( 'Destination',countries, index = 512)
 with st.spinner('Loading SeaRates Rates...'):
     try:
         auth_token = get_auth_token()
