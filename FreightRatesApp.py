@@ -1359,7 +1359,6 @@ with st.spinner('Loading SeaRates Rates...'):
             else:
                 df = df5
         fig = plt.figure(figsize=(24,4))
-        plt.rcParams['font.family'] = 'Segoe UI'
         gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
         ax0 = fig.add_subplot(gs[0, :])
         ax0.axis('off')
@@ -1377,7 +1376,6 @@ with st.spinner('Loading SeaRates Rates...'):
         st.pyplot(plt.gcf())
     except:
         fig = plt.figure(figsize=(24,5))
-        plt.rcParams['font.family'] = 'Segoe UI'
         gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
         ax0 = fig.add_subplot(gs[0, :])
         ax0.axis('off')
@@ -1524,7 +1522,6 @@ with st.spinner('Loading Freightos Rates...'):
 
     if results['Min Price'].isnull().all():
         fig = plt.figure(figsize=(24,4))
-        plt.rcParams['font.family'] = 'Segoe UI'
         gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
         ax0 = fig.add_subplot(gs[0, :])
         ax0.axis('off')
@@ -1543,7 +1540,6 @@ with st.spinner('Loading Freightos Rates...'):
     else:
         results=results[results['Min Price'].isnull()==False]
         fig = plt.figure(figsize=(24,4))
-        plt.rcParams['font.family'] = 'Segoe UI'
         ax0 = fig.add_subplot()
         ax0.axis('off')
         ax0.set_title("Freightos", fontsize=24)
