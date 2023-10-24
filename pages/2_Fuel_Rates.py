@@ -38,7 +38,6 @@ with st.spinner('Loading Freightos Rates...'):
     diesel_prices.columns.values[5]="1 yr change"
 
     fig = plt.figure(figsize=(16,16))
-    plt.rcParams['font.family'] = 'Segoe UI'
     gs = GridSpec(nrows=2, ncols=1, height_ratios=[1,1])
     ax0 = fig.add_subplot(gs[0, :])
     ax0.axis('off')
