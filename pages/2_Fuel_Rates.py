@@ -39,6 +39,7 @@ with st.spinner('Loading Fuel Rates...'):
 
     
     regular_gas_prices.set_index(regular_gas_prices.columns[0], inplace=True)
+    st.subheader('Regular')
     st.dataframe(regular_gas_prices)
     
     # fig = plt.figure(figsize=(16,16))
@@ -58,6 +59,7 @@ with st.spinner('Loading Fuel Rates...'):
     # table0.scale(1,3)
 
     diesel_prices.set_index(diesel_prices.columns[0], inplace=True)
+    st.subheader('Diesel')
     st.dataframe(diesel_prices)
 
     # ax1 = fig.add_subplot(gs[1, :])
